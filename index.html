@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Óscar Lejarriaga | AI & Data Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS CSS --- */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-color: #e0e0e0;
+            --accent-color: #00ff88; /* Verde Neón */
+            --secondary-text: #888;
+            --font-main: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Ocultamos el cursor nativo */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Canvas de fondo (Red Neuronal) */
+        #neural-network {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        /* Navegación */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem 5%;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        /* --- LOGO VACÍO (Mantiene el espacio) --- */
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            min-width: 10px; /* Asegura que ocupe espacio aunque esté vacío */
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .links a:hover {
+            color: var(--accent-color);
+        }
+
+        .btn-contact {
+            border: 1px solid var(--accent-color);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            color: var(--accent-color) !important;
+            transition: all 0.3s;
+        }
+
+        .btn-contact:hover {
+            background: var(--accent-color);
+            color: var(--bg-color) !important;
+        }
+
+        /* Botón de Idioma */
+        .lang-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: var(--text-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            cursor: none;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 5%;
+            position: relative;
+        }
+
+        .hero-content-center {
+            max-width: 950px;
+            z-index: 10;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -2px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .highlight {
+            color: var(--accent-color);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary-text);
+            margin-top: -20px;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.9s forwards;
+        }
+
+        /* Efecto Máquina de Escribir */
+        .typewriter {
+            font-size: 2.5rem;
+            color: var(--text-color);
+            font-family: monospace;
+            margin-bottom: 2rem;
+            min-height: 60px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.3s forwards;
+            white-space: nowrap; /* Forza una línea */
+        }
+
+        #typing-text {
+            color: var(--accent-color);
+            border-right: 3px solid var(--accent-color);
+            padding-right: 5px;
+            margin-left: 8px;
+            animation: blink 0.75s step-end infinite;
+        }
+
+        /* Botones del Hero */
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.6s forwards;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            color: var(--bg-color);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: 2px solid var(--accent-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-color);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: 2px solid #333;
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Secciones Generales */
+        .container {
+            padding: 100px 10%;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::after {
+            content: "";
+            display: block;
+            width: 200px;
+            height: 1px;
+            background: #333;
+            margin-left: 20px;
+        }
+
+        /* --- NUEVO DISEÑO ABOUT (FOTO + TEXTO) --- */
+        .about-wrapper {
+            display: grid;
+            grid-template-columns: 3fr 2fr; /* Texto ocupa más, foto menos */
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-img-container {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        /* Efecto marco desplazado */
+        .about-img-container::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+
+        .profile-img {
+            width: 100%;
+            border-radius: 10px;
+            /* AHORA: Empieza en color */
+            filter: grayscale(0%) contrast(1.1); 
+            transition: all 0.4s ease;
+            display: block;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Hover: Foto a BLANCO Y NEGRO y marco se mueve */
+        .about-img-container:hover .profile-img {
+            filter: grayscale(100%) contrast(1.2);
+            transform: translate(-5px, -5px);
+        }
+
+        .about-img-container:hover::before {
+            transform: translate(10px, 10px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+        }
+
+        /* Timeline */
+        .timeline-item {
+            border-left: 2px solid #333;
+            padding-left: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+
+        .timeline-item:hover {
+            border-left-color: var(--accent-color);
+        }
+
+        .timeline-item::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: var(--bg-color);
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            left: -6px;
+            top: 0;
+        }
+
+        .job-info h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .job-info h4 { color: var(--accent-color); margin-bottom: 1rem; font-weight: 300; }
+        .tags span, .card-tags span {
+            display: inline-block;
+            background: rgba(0, 255, 136, 0.05);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-top: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            font-family: monospace;
+        }
+
+        /* Proyectos Grid */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: rgba(25, 25, 25, 0.5);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .project-card:hover {
+            transform: translateY(-7px);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+
+        .folder-icon { font-size: 2rem; color: var(--accent-color); }
+        .links-icon a { color: var(--secondary-text); text-decoration: none; font-size: 0.9rem; transition: color 0.2s;}
+        .links-icon a:hover { text-decoration: none; color: var(--accent-color); }
+
+        .project-card h3 { margin-bottom: 0.8rem; color: #fff; }
+        .project-card p { font-size: 0.95rem; color: #aaa; margin-bottom: 1.5rem; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 80px 0;
+            background: #0f0f0f;
+            margin-top: 50px;
+            border-top: 1px solid #222;
+        }
+
+        .btn-big {
+            display: inline-block;
+            margin: 2rem 0;
+            padding: 1rem 3rem;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .btn-big:hover { background: var(--accent-color); color: var(--bg-color); }
+        .socials a { color: var(--secondary-text); margin: 0 1rem; text-decoration: none; }
+        .socials a:hover { color: var(--accent-color); }
+
+        /* Cursor Personalizado */
+        .cursor {
+            width: 8px; height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-follower {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(0, 255, 136, 0.5);
+            border-radius: 50%;
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s, width 0.3s, height 0.3s;
+        }
+
+        @keyframes blink { 50% { border-color: transparent; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3.5rem; }
+            .typewriter { font-size: 1.2rem; min-height: 40px;}
+            .hero-buttons { flex-direction: column; align-items: center; width: 100%; }
+            .btn-primary, .btn-outline { width: 100%; max-width: 300px; }
+            .nav-right { gap: 1rem; }
+            .links { display: none; } /* Menú simplificado en móvil */
+            .about-wrapper { grid-template-columns: 1fr; } /* Foto abajo en móvil */
+            .about-img-container { order: -1; margin-bottom: 2rem; } /* Foto arriba del texto en móvil */
+            .cursor, .cursor-follower { display: none; }
+            * { cursor: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursores -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Fondo Interactivo -->
+    <canvas id="neural-network"></canvas>
+
+    <nav>
+        <!-- LOGO VACÍO (Sin texto) -->
+        <div class="logo"></div>
+        <div class="nav-right">
+            <div class="links">
+                <a href="#about" data-translate="nav_about">Sobre mí</a>
+                <a href="#experience" data-translate="nav_exp">Experiencia</a>
+                <a href="#projects" data-translate="nav_projects">Proyectos</a>
+                <a href="#contact" class="btn-contact" data-translate="nav_contact">Contactar</a>
+            </div>
+            <button id="lang-toggle" class="lang-btn">EN / ES</button>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-content-center">
+            <h1 class="fade-in-text">
+                <span data-translate="hero_greeting">Hola, soy</span> 
+                <span class="highlight">Óscar.</span>
+            </h1>
+            
+            <p class="hero-subtitle" data-translate="hero_subtitle">Construyendo sistemas de IA Generativa End-to-End y Arquitecturas Cloud</p>
+
+            <h2 class="typewriter"><span data-translate="hero_engineering">Desarrollo</span>&nbsp;<span id="typing-text"></span></h2>
+            
+            <div class="hero-buttons">
+                <a href="#projects" class="btn-primary" data-translate="btn_code">Ver Proyectos</a>
+                <a href="#about" class="btn-outline" data-translate="btn_about">Sobre mí</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="about" class="container">
+        <h2 data-translate="about_title">01. El Perfil</h2>
+        
+        <!-- DISEÑO ABOUT CON FOTO INTEGRADA -->
+        <div class="about-wrapper">
+            <div class="about-text">
+                <div class="content-block">
+                    <p data-translate="about_p1">
+                        Soy un <strong>Ingeniero de IA</strong> enfocado en la construcción de soluciones <strong>End-to-End</strong>. Mi experiencia híbrida en análisis financiero y desarrollo backend me permite entender el impacto de negocio de los modelos que despliego.
+                    </p>
+                    <p data-translate="about_p2">
+                        Me especializo en arquitecturas modernas: desde el diseño de sistemas <strong>RAG con Azure OpenAI</strong> hasta la automatización de pipelines MLOps con Docker y CI/CD. No solo entreno modelos; construyo productos de software escalables impulsados por IA.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- CONTENEDOR DE FOTO -->
+            <div class="about-img-container">
+                <!-- FOTO DE PERFIL -->
+                <img src="foto-perfil.jpg" alt="Óscar Lejarriaga" class="profile-img">
+            </div>
+        </div>
+
+    </section>
+
+    <section id="experience" class="container">
+        <h2 data-translate="exp_title">02. Experiencia Profesional</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="date" data-translate="job_date">Abr 2023 - Presente</div>
+                <div class="job-info">
+                    <h3 data-translate="job_title">Data Analyst & BI Specialist</h3>
+                    <h4>WebCapitalRiesgo</h4>
+                    <p data-translate="job_desc">Lidero la estructuración y limpieza de datos financieros complejos. Automatización de procesos ETL utilizando scripting avanzado (VBA/Python) y modelado de datos en Power BI para la toma de decisiones críticas de inversión.</p>
+                    <div class="tags">
+                        <span>Data Engineering</span>
+                        <span>ETL Automation</span>
+                        <span>Power BI</span>
+                        <span>SQL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="education" class="container">
+        <h2 data-translate="edu_title">03. Educación y Certificaciones</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="date" data-translate="edu_date1">2022 - 2027 (En curso)</div>
+                <div class="job-info">
+                    <h3 data-translate="edu_title1">Grado en Ingeniería Informática</h3>
+                    <h4>UOC (Universitat Oberta de Catalunya)</h4>
+                    <p data-translate="edu_desc1">Enfoque en Arquitectura de Software, Algoritmos e Inteligencia Artificial.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="date">2024 - 2025</div>
+                <div class="job-info">
+                    <h3>IBM Data Science Professional Certificate</h3>
+                    <h4>IBM</h4>
+                    <p data-translate="edu_desc2">Formación completa en Python, SQL, Visualización de Datos y metodologías de Machine Learning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="container">
+        <h2 data-translate="proj_title">04. Proyectos Destacados (End-to-End)</h2>
+        <div class="project-grid">
+            
+            <div class="project-card">
+                <div class="card-header">
+                    <div class="folder-icon">☁️</div>
+                    <div class="links-icon"><a href="#" target="_blank">GitHub ↗</a></div>
+                </div>
+                <h3>Azure Financial RAG Agent</h3>
+                <p data-translate="proj_desc1">Agente de IA Generativa desplegado en Azure. Utiliza <strong>LangChain</strong> y embeddings vectoriales para consultar reportes financieros privados sin alucinaciones.</p>
+                <div class="card-tags">
+                    <span>Azure OpenAI</span><span>LangChain</span><span>FastAPI</span><span>RAG</span>
+                </div>
+            </div>
+            
+            <div class="project-card">
+                <div class="card-header">
+                    <div class="folder-icon">👁️</div>
+                    <div class="links-icon"><a href="#" target="_blank">Live Demo ↗</a></div>
+                </div>
+                <h3>VisionGuard MLOps Pipeline</h3>
+                <p data-translate="proj_desc2">Sistema de detección de anomalías en tiempo real. Modelo YOLOv8 contenerizado con <strong>Docker</strong> y orquestado mediante pipelines CI/CD para despliegue automatizado.</p>
+                <div class="card-tags">
+                    <span>PyTorch</span><span>Docker</span><span>CI/CD</span><span>MLflow</span>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="card-header">
+                    <div class="folder-icon">📊</div>
+                    <div class="links-icon"><a href="#" target="_blank">GitHub ↗</a></div>
+                </div>
+                <h3>Databricks ETL Automation</h3>
+                <p data-translate="proj_desc3">Pipeline de ingeniería de datos para ingestión masiva. Procesamiento distribuido con <strong>Spark</strong> y estructuración de datos para alimentar dashboards de Power BI.</p>
+                <div class="card-tags">
+                    <span>Databricks</span><span>Spark/PySpark</span><span>SQL</span><span>Power BI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <h2 data-translate="footer_title">¿Listo para desplegar?</h2>
+        <p data-translate="footer_sub">Abierto a oportunidades en Ingeniería de IA Generativa y MLOps.</p>
+        <a href="mailto:oscarlejarriaga@gmail.com" class="btn-big" data-translate="footer_btn">Contactar</a>
+        <div class="socials">
+            <a href="https://www.linkedin.com/in/%C3%B3scar-lejarriaga-verstegen-aaa409270/" target="_blank">LinkedIn</a>
+            <a href="#" target="_blank">GitHub</a>
+        </div>
+        <p class="copyright">Engineered by Óscar LV © 2025</p>
+    </footer>
+
+    <script>
+        // --- SISTEMA DE TRADUCCIÓN ---
+        const translations = {
+            es: {
+                nav_about: "Sobre mí",
+                nav_exp: "Experiencia",
+                nav_projects: "Proyectos",
+                nav_contact: "Contactar",
+                hero_greeting: "Hola, soy",
+                hero_subtitle: "Construyendo sistemas de IA Generativa End-to-End y Arquitecturas Cloud",
+                hero_engineering: "Desarrollo",
+                btn_code: "Ver Proyectos",
+                btn_about: "Sobre mí",
+                about_title: "01. El Perfil",
+                about_p1: "Soy un <strong>Ingeniero de IA</strong> enfocado en la construcción de soluciones <strong>End-to-End</strong>. Mi experiencia híbrida en análisis financiero y desarrollo backend me permite entender el impacto de negocio de los modelos que despliego.",
+                about_p2: "Me especializo en arquitecturas modernas: desde el diseño de sistemas <strong>RAG con Azure OpenAI</strong> hasta la automatización de pipelines MLOps con Docker y CI/CD. No solo entreno modelos; construyo productos de software escalables impulsados por IA.",
+                exp_title: "02. Experiencia Profesional",
+                job_date: "Abr 2023 - Presente",
+                job_title: "Data Analyst & BI Specialist",
+                job_desc: "Lidero la estructuración y limpieza de datos financieros complejos. Automatización de procesos ETL utilizando scripting avanzado (VBA/Python) y modelado de datos en Power BI para la toma de decisiones críticas de inversión.",
+                edu_title: "03. Educación y Certificaciones",
+                edu_date1: "2022 - 2027 (En curso)",
+                edu_title1: "Grado en Ingeniería Informática",
+                edu_desc1: "Enfoque en Arquitectura de Software, Algoritmos e Inteligencia Artificial.",
+                edu_desc2: "Formación completa en Python, SQL, Visualización de Datos y metodologías de Machine Learning.",
+                proj_title: "04. Proyectos Destacados (End-to-End)",
+                proj_desc1: "Agente de IA Generativa desplegado en Azure. Utiliza <strong>LangChain</strong> y embeddings vectoriales para consultar reportes financieros privados sin alucinaciones.",
+                proj_desc2: "Sistema de detección de anomalías en tiempo real. Modelo YOLOv8 contenerizado con <strong>Docker</strong> y orquestado mediante pipelines CI/CD para despliegue automatizado.",
+                proj_desc3: "Pipeline de ingeniería de datos para ingestión masiva. Procesamiento distribuido con <strong>Spark</strong> y estructuración de datos para alimentar dashboards de Power BI.",
+                footer_title: "¿Listo para desplegar?",
+                footer_sub: "Abierto a oportunidades en Ingeniería de IA Generativa y MLOps.",
+                footer_btn: "Contactar"
+            },
+            en: {
+                nav_about: "About Me",
+                nav_exp: "Experience",
+                nav_projects: "Projects",
+                nav_contact: "Contact",
+                hero_greeting: "Hi, I'm",
+                hero_subtitle: "Building End-to-End GenAI Systems & Cloud Architectures",
+                hero_engineering: "Development", // CAMBIADO A DEVELOPMENT
+                btn_code: "View Code",
+                btn_about: "About Me",
+                about_title: "01. The Profile",
+                about_p1: "I am an <strong>AI Engineer</strong> focused on building <strong>End-to-End</strong> solutions. My hybrid background in financial analysis and backend development allows me to understand the business impact of the models I deploy.",
+                about_p2: "I specialize in modern architectures: from designing <strong>RAG systems with Azure OpenAI</strong> to automating MLOps pipelines with Docker and CI/CD. I don't just train models; I build scalable AI-driven software products.",
+                exp_title: "02. Professional Experience",
+                job_date: "Apr 2023 - Present",
+                job_title: "Data Analyst & BI Specialist",
+                job_desc: "Leading the structuring and cleaning of complex financial data. Automating ETL processes using advanced scripting (VBA/Python) and data modeling in Power BI for critical investment decision-making.",
+                edu_title: "03. Education & Certifications",
+                edu_date1: "2022 - 2027 (In Progress)",
+                edu_title1: "B.S. Computer Engineering",
+                edu_desc1: "Focus on Software Architecture, Algorithms & Artificial Intelligence.",
+                edu_desc2: "Comprehensive training in Python, SQL, Data Visualization and Machine Learning methodologies.",
+                proj_title: "04. Selected Projects (End-to-End)",
+                proj_desc1: "Generative AI Agent deployed on Azure. Uses <strong>LangChain</strong> and vector embeddings to query private financial reports with zero hallucinations.",
+                proj_desc2: "Real-time anomaly detection system. YOLOv8 model containerized with <strong>Docker</strong> and orchestrated via CI/CD pipelines for automated deployment.",
+                proj_desc3: "Data engineering pipeline for massive ingestion. Distributed processing with <strong>Spark</strong> and data structuring to feed Power BI dashboards.",
+                footer_title: "Ready to deploy?",
+                footer_sub: "Open to opportunities in Generative AI & MLOps Engineering.",
+                footer_btn: "Get in Touch"
+            }
+        };
+
+        // Frases Typewriter por idioma
+        const phrasesEs = ["Sistemas de IA Generativa.", "Soluciones LLM End-to-End.", "Arquitecturas Cloud Azure.", "Agentes RAG & Embeddings."];
+        const phrasesEn = ["Generative AI Systems.", "End-to-End LLM Solutions.", "Azure Cloud Architectures.", "RAG Agents & Embeddings."];
+
+        let currentLang = 'es'; // Idioma por defecto
+        let currentPhrases = phrasesEs;
+
+        // --- LÓGICA TYPEWRITER ---
+        const textElement = document.getElementById('typing-text');
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+        let typewriterTimeout;
+
+        function typeEffect() {
+            const currentPhrase = currentPhrases[phraseIndex];
+            
+            if (isDeleting) {
+                textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50;
+            } else {
+                textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 150;
+            }
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isDeleting = true;
+                typeSpeed = 2000; 
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % currentPhrases.length;
+                typeSpeed = 500;
+            }
+            typewriterTimeout = setTimeout(typeEffect, typeSpeed);
+        }
+
+        // --- CAMBIO DE IDIOMA ---
+        const langBtn = document.getElementById('lang-toggle');
+        
+        langBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            updateLanguage();
+        });
+
+        function updateLanguage() {
+            // Actualizar textos estáticos
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[currentLang][key]) {
+                    element.innerHTML = translations[currentLang][key];
+                }
+            });
+
+            // Actualizar botón
+            langBtn.textContent = currentLang === 'es' ? 'EN / ES' : 'ES / EN';
+
+            // Reiniciar Typewriter con nuevas frases
+            clearTimeout(typewriterTimeout);
+            currentPhrases = currentLang === 'es' ? phrasesEs : phrasesEn;
+            phraseIndex = 0;
+            charIndex = 0;
+            isDeleting = false;
+            typeEffect();
+        }
+
+        // Iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            typeEffect();
+            updateLanguage(); // Asegurar carga inicial correcta
+        });
+
+        // --- CURSOR Y CANVAS ---
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        
+        // Delegación de eventos
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
+        function animateCursor() {
+            posX += (mouseX - posX) / 9;
+            posY += (mouseY - posY) / 9;
+            follower.style.left = posX + 'px';
+            follower.style.top = posY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Efecto hover en enlaces y tarjetas
+        document.body.addEventListener('mouseover', (e) => {
+            if (e.target.matches('a, button, .project-card, .timeline-item') || e.target.closest('a, button, .project-card')) {
+                follower.style.transform = `translate(-50%, -50%) scale(1.5)`;
+                follower.style.background = 'rgba(0, 255, 136, 0.1)';
+            } else {
+                follower.style.transform = `translate(-50%, -50%) scale(1)`;
+                follower.style.background = 'transparent';
+            }
+        });
+
+        // Canvas Red Neuronal
+        const canvas = document.getElementById('neural-network');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.directionX = (Math.random() * 2) - 1;
+                this.directionY = (Math.random() * 2) - 1;
+                this.size = (Math.random() * 2) + 1;
+                this.color = '#00ff88';
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 15000;
+            for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                let dx = mouseX - particlesArray[i].x;
+                let dy = mouseY - particlesArray[i].y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(0, 255, 136, ${1 - distance/150})`;
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                    ctx.lineTo(mouseX, mouseY);
+                    ctx.stroke();
+                }
+            }
+        }
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+        init();
+        animate();
+    </script>
+</body>
+</html>
